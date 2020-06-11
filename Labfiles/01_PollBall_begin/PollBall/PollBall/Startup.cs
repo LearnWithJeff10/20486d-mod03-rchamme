@@ -18,6 +18,22 @@ namespace PollBall
  
         public void Configure (IApplicationBuilder app)
         {
+            // Moving UseStaticFiles ahead of Use added "?favorite=Basketball" to url
+
+            app.Use(async (context, next) =>
+            {
+                if (context.Request.Query.ContainsKey("favorite"))
+                {
+                    string selectedValue = context.Request.Query["favorite"];
+                    await context.Response.WriteAsync("Selected value is: " + selectedValue);
+                }
+                // Commenting out the else statement returned blank pages for home page and poll-questions page
+                else
+                {
+                    await next.Invoke();
+                }
+            });
+
             app.UseStaticFiles();
 
             app.Run(async (context) =>
